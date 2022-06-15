@@ -28,6 +28,12 @@ dependencies {
 
 	implementation("com.squareup.retrofit2:retrofit:2.9.0")
 	implementation("com.squareup.retrofit2:converter-jackson:2.9.0")
+
+
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.7.0")
+	implementation("mysql:mysql-connector-java:8.0.29")
+
+
 }
 
 tasks.withType<KotlinCompile> {
