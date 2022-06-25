@@ -1,16 +1,13 @@
-package gr.makris.smartConnect.service
+package gr.makris.smartConnect.service.user
 
-import gr.atcom.gpslocationservice.model.common.DataResult
 import gr.atcom.gpslocationservice.model.common.DataResultWithError
 import gr.atcom.gpslocationservice.model.common.Model
 import gr.makris.smartConnect.data.user.CreateUserErrorModel
 import gr.makris.smartConnect.data.user.User
 import gr.makris.smartConnect.repository.DbRepository
-import net.bytebuddy.implementation.bytecode.Throw
-import org.hibernate.exception.ConstraintViolationException
+import gr.makris.smartConnect.service.user.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Service
 
 @Service

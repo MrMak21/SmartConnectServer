@@ -1,4 +1,4 @@
-package gr.makris.smartConnect.service
+package gr.makris.smartConnect.service.user
 
 import gr.atcom.gpslocationservice.model.common.DataResult
 import gr.atcom.gpslocationservice.model.common.DataResultWithError

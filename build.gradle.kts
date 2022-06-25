@@ -22,7 +22,8 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.projectlombok:lombok:1.18.20")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 	implementation("com.google.code.gson:gson:2.8.6")
 
@@ -32,6 +33,9 @@ dependencies {
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.7.0")
 	implementation("mysql:mysql-connector-java:8.0.29")
+
+	implementation("org.springframework.boot:spring-boot-starter-security:2.7.1")
+
 
 
 }
