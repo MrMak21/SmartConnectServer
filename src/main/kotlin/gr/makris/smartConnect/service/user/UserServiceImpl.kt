@@ -4,6 +4,7 @@ import gr.atcom.gpslocationservice.model.common.DataResultWithError
 import gr.atcom.gpslocationservice.model.common.Model
 import gr.makris.smartConnect.data.user.CreateUserErrorModel
 import gr.makris.smartConnect.data.user.User
+import gr.makris.smartConnect.data.user.UserNotFoundErrorModel
 import gr.makris.smartConnect.repository.DbRepository
 import gr.makris.smartConnect.service.user.UserService
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,6 +29,14 @@ class UserServiceImpl : UserService {
             DataResultWithError(error = CreateUserErrorModel(message = "A user with this email already exists - " + user.email, "100"))
         } catch (t: Throwable) {
             DataResultWithError(error = CreateUserErrorModel(message = "Something went wrong. Please try again later"))
+        }
+    }
+
+    override fun getUserByEmail(email: String): DataResultWithError<User, Model> {
+        return try {
+            DataResultWithError(userJpaRepository.findUserByEmail(email))
+        } catch (t: Throwable) {
+            DataResultWithError(error = UserNotFoundErrorModel(message = "User not found", errorCode = "24"))
         }
     }
 }

@@ -23,4 +23,7 @@ interface DbRepository: JpaRepository<User,String> {
     override fun <S : User?> save(entity: S): S {
         return entity
     }
+
+    @Query("SELECT * FROM Users u where u.email = :email ", nativeQuery = true)
+    fun findUserByEmail(email: String): User
 }
