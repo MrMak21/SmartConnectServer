@@ -13,5 +13,5 @@ data class User(
     var lastname: String,
     var email: String,
     var password: String,
-    var enabled: Boolean
+    var enabled: Boolean = false
 )

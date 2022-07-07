@@ -6,6 +6,7 @@ import gr.makris.smartConnect.service.user.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -33,8 +34,9 @@ class ServerController {
     }
 
     @GetMapping("/api/smartConnect/getUsers")
-    fun getUsers(): String {
+    fun getUsers(@RequestHeader(name = "x-auth-token", required = true) x_auth_token: String): String {
         val users = userService.getUsers()
+        x_auth_token
         return gson.toJson(users)
     }
 

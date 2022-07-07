@@ -36,6 +36,14 @@ dependencies {
 
 	implementation("org.springframework.boot:spring-boot-starter-security:2.7.1")
 
+//	implementation("org.springframework.session:spring-session:1.3.5.RELEASE")
+
+
+	implementation("org.springframework.session:spring-session-data-redis:2.7.0")
+
+
+
+
 
 
 }
