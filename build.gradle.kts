@@ -35,6 +35,9 @@ dependencies {
 	implementation("mysql:mysql-connector-java:8.0.29")
 
 	implementation("org.springframework.boot:spring-boot-starter-security:2.7.1")
+	implementation ("com.auth0:java-jwt:4.0.0")
+
+
 
 //	implementation("org.springframework.session:spring-session:1.3.5.RELEASE")
 

@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import gr.makris.smartConnect.data.requests.login.LoginUserRequest
 import gr.makris.smartConnect.data.user.User
 import gr.makris.smartConnect.data.user.UserWrongPasswordErrorModel
+import gr.makris.smartConnect.manager.authenticationManager.AuthenticationManager
 import gr.makris.smartConnect.response.login.LoginResponse
 import gr.makris.smartConnect.security.PasswordEncoder
 import gr.makris.smartConnect.service.registration.ConfirmationTokenServiceImpl
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import java.util.Base64
+import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpSession
 
 @RestController
@@ -26,9 +28,12 @@ class LoginController {
     @Autowired
     private lateinit var passwordEncoder: PasswordEncoder
 
+    @Autowired
+    private lateinit var authenticationManager: AuthenticationManager
+
     private var gson: Gson = Gson()
 
-    @PostMapping("api/smartConnect/loginUser")
+    @PostMapping("api/smartConnect/loginUser", produces= ["application/json"])
     fun loginUser(@RequestBody userLoginRequest: LoginUserRequest, httpSession: HttpSession): ResponseEntity<String> {
 
         val findUserResponse = userService.getUserByEmail(userLoginRequest.email)
@@ -37,8 +42,15 @@ class LoginController {
             val isPasswordRight = passwordEncoder.bCryptPasswordEncoder().matches(userLoginRequest.password, it.password)
             if (isPasswordRight) {
                 // success login
-                val x_auth_token = getAccessToken(it)
-                return ResponseEntity.status(HttpStatus.OK).body(gson.toJson(LoginResponse(it,x_auth_token)))
+
+                val accessTokenPair = authenticationManager.createAccessToken(it)
+                val accessToken = accessTokenPair.first
+                val refreshToken = accessTokenPair.second
+
+                return ResponseEntity.status(HttpStatus.OK)
+                    .header("accessToken", accessToken)
+                    .header("refreshToken", refreshToken)
+                    .body(gson.toJson(LoginResponse(it, accessToken, refreshToken)))
             } else {
                  return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(gson.toJson(
                      UserWrongPasswordErrorModel(
@@ -52,9 +64,4 @@ class LoginController {
         }
     }
 
-    private fun getAccessToken(user: User): String {
-        val stringToEncode = "${user.email} ${user.firstname} ${user.lastname}"
-        val accessToken = Base64.getEncoder().encodeToString(stringToEncode.toByteArray())
-        return accessToken
-    }
 }

@@ -1,5 +1,6 @@
 package gr.makris.smartConnect.controllers.server
 
+import com.auth0.jwt.JWT
 import com.google.gson.Gson
 import gr.makris.smartConnect.data.server.ServerCheck
 import gr.makris.smartConnect.service.user.UserService

@@ -4,5 +4,6 @@ import gr.makris.smartConnect.data.user.User
 
 data class LoginResponse(
     val user: User,
-    val x_auth_token: String
+    val accessToken: String,
+    val refreshToken: String
 )
