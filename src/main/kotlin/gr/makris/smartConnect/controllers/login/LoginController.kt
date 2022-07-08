@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import gr.makris.smartConnect.data.error.ApiError
 import gr.makris.smartConnect.data.error.CustomError
 import gr.makris.smartConnect.data.requests.login.LoginUserRequest
+import gr.makris.smartConnect.data.user.UserNotFoundException
 import gr.makris.smartConnect.data.user.UserWrongPasswordErrorModel
 import gr.makris.smartConnect.manager.authenticationManager.AuthenticationManager
 import gr.makris.smartConnect.response.login.LoginResponse
@@ -60,16 +61,7 @@ class LoginController {
                  ))
             }
         } ?: findUserResponse.error.let {
-            val errorObject = ApiError(
-                HttpStatus.EXPECTATION_FAILED,
-                LocalDateTime.now().toInstant(ZoneOffset.UTC).toString(),
-                listOf(
-                    CustomError(
-                        description = "User not found", code = "24"
-                    )
-                )
-            )
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(gson.toJson(errorObject))
+            throw UserNotFoundException(errorMessage = "User not found", errorCode = "AUTH2020")
         }
     }
 

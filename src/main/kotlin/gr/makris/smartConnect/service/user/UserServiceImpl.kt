@@ -35,6 +35,7 @@ class UserServiceImpl : UserService {
         return try {
             DataResultWithError(userJpaRepository.findUserByEmail(email))
         } catch (t: Throwable) {
+//            throw UserNotFoundException()
             DataResultWithError(error = UserNotFoundException(errorMessage = "User not found", errorCode = "24"))
         }
     }
