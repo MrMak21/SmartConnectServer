@@ -27,7 +27,7 @@ class AuthenticationManager {
         val accessToken = JWT.create()
             .withIssuer(issuer)
             .withSubject(user.email)
-            .withExpiresAt(Date(System.currentTimeMillis() + 40 * 60 * 1000))
+            .withExpiresAt(LocalDateTime.now().plusMinutes(40).toInstant(ZoneOffset.UTC))
             .sign(algorithm)
 
         val refreshToken = JWT.create()
