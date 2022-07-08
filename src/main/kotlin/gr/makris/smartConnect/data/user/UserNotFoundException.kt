@@ -2,7 +2,7 @@ package gr.makris.smartConnect.data.user
 
 import gr.atcom.gpslocationservice.model.common.Model
 
-data class UserNotFoundErrorModel(
-    var message: String = "",
+class UserNotFoundException(
+    var errorMessage: String = "",
     var errorCode: String = ""
-) : Model
+) : RuntimeException(), Model

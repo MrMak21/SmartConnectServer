@@ -4,9 +4,8 @@ import gr.atcom.gpslocationservice.model.common.DataResultWithError
 import gr.atcom.gpslocationservice.model.common.Model
 import gr.makris.smartConnect.data.user.CreateUserErrorModel
 import gr.makris.smartConnect.data.user.User
-import gr.makris.smartConnect.data.user.UserNotFoundErrorModel
+import gr.makris.smartConnect.data.user.UserNotFoundException
 import gr.makris.smartConnect.repository.DbRepository
-import gr.makris.smartConnect.service.user.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
@@ -36,7 +35,7 @@ class UserServiceImpl : UserService {
         return try {
             DataResultWithError(userJpaRepository.findUserByEmail(email))
         } catch (t: Throwable) {
-            DataResultWithError(error = UserNotFoundErrorModel(message = "User not found", errorCode = "24"))
+            DataResultWithError(error = UserNotFoundException(errorMessage = "User not found", errorCode = "24"))
         }
     }
 }
