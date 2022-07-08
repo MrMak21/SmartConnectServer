@@ -3,7 +3,7 @@ package gr.makris.smartConnect.service.registration
 import gr.atcom.gpslocationservice.model.common.DataResult
 import gr.makris.smartConnect.repository.DbRepository
 import gr.makris.smartConnect.repository.registration.ConfirmationTokenRepository
-import gr.makris.smartConnect.tokens.registration.ConfirmationToken
+import gr.makris.smartConnect.data.registration.ConfirmationToken
 import lombok.AllArgsConstructor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

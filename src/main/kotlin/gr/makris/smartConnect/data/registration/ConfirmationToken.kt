@@ -1,4 +1,4 @@
-package gr.makris.smartConnect.tokens.registration
+package gr.makris.smartConnect.data.registration
 
 import lombok.Getter
 import lombok.NoArgsConstructor

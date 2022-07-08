@@ -6,7 +6,7 @@ import gr.makris.smartConnect.mappers.registration.toUserModel
 import gr.makris.smartConnect.security.PasswordEncoder
 import gr.makris.smartConnect.service.user.UserService
 import gr.makris.smartConnect.service.registration.ConfirmationTokenServiceImpl
-import gr.makris.smartConnect.tokens.registration.ConfirmationToken
+import gr.makris.smartConnect.data.registration.ConfirmationToken
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

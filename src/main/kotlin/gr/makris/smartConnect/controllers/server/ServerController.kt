@@ -3,9 +3,12 @@ package gr.makris.smartConnect.controllers.server
 import com.auth0.jwt.JWT
 import com.google.gson.Gson
 import gr.makris.smartConnect.data.server.ServerCheck
+import gr.makris.smartConnect.manager.authenticationManager.AuthenticationManager
 import gr.makris.smartConnect.service.user.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
@@ -19,6 +22,9 @@ class ServerController {
 
     @Autowired
     private lateinit var userService: UserService
+
+    @Autowired
+    private lateinit var authenticationManager: AuthenticationManager
 
     private lateinit var gson: Gson
 
@@ -34,11 +40,14 @@ class ServerController {
         return gson.toJson(serverStatus)
     }
 
-    @GetMapping("/api/smartConnect/getUsers")
-    fun getUsers(@RequestHeader(name = "x-auth-token", required = true) x_auth_token: String): String {
+    @GetMapping("/api/smartConnect/getUsers", produces= ["application/json"])
+    fun getUsers(@RequestHeader(name = "x-auth-token", required = true) x_auth_token: String): ResponseEntity<String> {
+        val isUserAuthenticated = authenticationManager.validateUser(x_auth_token)
+        if (!isUserAuthenticated) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized")
+        }
         val users = userService.getUsers()
-        x_auth_token
-        return gson.toJson(users)
+        return ResponseEntity(gson.toJson(users), HttpStatus.OK)
     }
 
 

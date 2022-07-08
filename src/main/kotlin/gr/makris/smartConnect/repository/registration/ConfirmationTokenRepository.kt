@@ -1,6 +1,6 @@
 package gr.makris.smartConnect.repository.registration
 
-import gr.makris.smartConnect.tokens.registration.ConfirmationToken
+import gr.makris.smartConnect.data.registration.ConfirmationToken
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query

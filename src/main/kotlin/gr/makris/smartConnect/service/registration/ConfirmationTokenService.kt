@@ -1,7 +1,7 @@
 package gr.makris.smartConnect.service.registration
 
 import gr.atcom.gpslocationservice.model.common.DataResult
-import gr.makris.smartConnect.tokens.registration.ConfirmationToken
+import gr.makris.smartConnect.data.registration.ConfirmationToken
 
 interface ConfirmationTokenService {
 
