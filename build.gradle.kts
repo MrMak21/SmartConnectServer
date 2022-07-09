@@ -38,6 +38,18 @@ dependencies {
 	implementation("com.auth0:java-jwt:4.0.0")
 
 	implementation("org.springframework.session:spring-session-data-redis:2.7.0")
+
+	implementation ("com.google.api-client:google-api-client:1.35.1")
+	implementation ("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+	implementation ("com.google.apis:google-api-services-gmail:v1-rev20211108-1.32.1")
+
+
+//	implementation ("jakarta.mail:jakarta.mail-api:2.1.0")
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+	implementation("org.springframework.boot:spring-boot-starter-mail:2.7.1")
+
+
 }
 
 tasks.withType<KotlinCompile> {

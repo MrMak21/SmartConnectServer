@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import gr.makris.smartConnect.SmartConnectApplication
 import gr.makris.smartConnect.manager.authenticationManager.AuthenticationManager
 import gr.makris.smartConnect.response.authTokens.RefreshTokenResponse
+import gr.makris.smartConnect.service.email.GmailServiceProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,6 +22,9 @@ class AuthorizationController {
 
     @Autowired
     private lateinit var authenticationManager: AuthenticationManager
+
+    @Autowired
+    private lateinit var emailService: GmailServiceProvider
 
     private var gson: Gson = Gson()
 
@@ -40,7 +44,10 @@ class AuthorizationController {
                 )
             ), HttpStatus.OK
         )
+    }
 
-
+    @GetMapping("/api/smartConnect/sendMail", produces = ["application/json"])
+    fun sendEmail() {
+        emailService.sendEmail()
     }
 }
