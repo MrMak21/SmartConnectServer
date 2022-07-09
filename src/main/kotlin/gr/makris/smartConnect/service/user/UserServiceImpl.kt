@@ -4,7 +4,7 @@ import gr.atcom.gpslocationservice.model.common.DataResultWithError
 import gr.atcom.gpslocationservice.model.common.Model
 import gr.makris.smartConnect.data.user.CreateUserErrorModel
 import gr.makris.smartConnect.data.user.User
-import gr.makris.smartConnect.data.user.UserNotFoundException
+import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
 import gr.makris.smartConnect.repository.DbRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException

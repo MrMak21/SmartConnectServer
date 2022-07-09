@@ -1,4 +1,4 @@
-package gr.makris.smartConnect.data.user
+package gr.makris.smartConnect.exceptions.userExceptions
 
 import gr.atcom.gpslocationservice.model.common.Model
 
