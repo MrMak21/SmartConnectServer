@@ -6,6 +6,7 @@ import gr.makris.smartConnect.data.requests.login.LoginUserRequest
 import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
 import gr.makris.smartConnect.data.user.UserWrongPasswordErrorModel
 import gr.makris.smartConnect.exceptions.userExceptions.InvalidCredentialsException
+import gr.makris.smartConnect.exceptions.userExceptions.UserNotConfirmedException
 import gr.makris.smartConnect.manager.authenticationManager.AuthenticationManager
 import gr.makris.smartConnect.response.login.LoginResponse
 import gr.makris.smartConnect.security.PasswordEncoder
@@ -44,23 +45,27 @@ class LoginController {
         findUserResponse.data?.let {
             val isPasswordRight = passwordEncoder.bCryptPasswordEncoder().matches(userLoginRequest.password, it.password)
             if (isPasswordRight) {
-                // success login
+                if (!it.enabled) { // if user has not confirmed his acc registration
+                    throw UserNotConfirmedException()
+                }
 
+                // success login
                 val accessTokenPair = authenticationManager.createAccessToken(it)
                 val accessToken = accessTokenPair.first
                 val refreshToken = accessTokenPair.second
 
-                logger.info("Access token: $accessToken")
+                logger.info("Access token: $accessToken\n" +
+                            "Refresh token: $refreshToken")
 
                 return ResponseEntity.status(HttpStatus.OK)
                     .header("accessToken", accessToken)
                     .header("refreshToken", refreshToken)
                     .body(gson.toJson(LoginResponse(it, accessToken, refreshToken)))
             } else {
-                throw InvalidCredentialsException(errorMessage = "Email or password are wrong. Please try again", errorCode = "AUTH20")
+                throw InvalidCredentialsException()
             }
         } ?: findUserResponse.error.let {
-            throw UserNotFoundException(errorMessage = "User not found", errorCode = "AUTH2020")
+            throw InvalidCredentialsException()
         }
     }
 

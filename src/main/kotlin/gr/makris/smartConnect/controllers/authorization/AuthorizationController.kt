@@ -2,6 +2,7 @@ package gr.makris.smartConnect.controllers.authorization
 
 import com.google.gson.Gson
 import gr.makris.smartConnect.SmartConnectApplication
+import gr.makris.smartConnect.data.user.User
 import gr.makris.smartConnect.manager.authenticationManager.AuthenticationManager
 import gr.makris.smartConnect.response.authTokens.RefreshTokenResponse
 import gr.makris.smartConnect.service.email.GmailServiceProvider
@@ -48,6 +49,7 @@ class AuthorizationController {
 
     @GetMapping("/api/smartConnect/sendMail", produces = ["application/json"])
     fun sendEmail() {
-        emailService.sendEmail()
+        emailService.createEmail(User("", "panos", "mak", "mak@gmail.com", "12345", true),
+        "12342341234124213421343214")
     }
 }

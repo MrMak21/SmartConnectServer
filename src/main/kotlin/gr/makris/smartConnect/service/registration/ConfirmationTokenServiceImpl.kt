@@ -41,14 +41,12 @@ class ConfirmationTokenServiceImpl: ConfirmationTokenService {
             return if (foundToken.token.isNotEmpty()) {
 
                 if (foundToken.createdat == null) {
-                    throw ConfirmationTokenNotFoundException(errorMessage = "Confirmation token not found", errorCode = "CONF10")
-//                    return DataResult(error = IllegalStateException("Token not found"))
+                    throw ConfirmationTokenNotFoundException()
                 }
 
                 val expiredDate = foundToken.expiresat
                 if (expiredDate.isBefore(LocalDateTime.now())) {
-                    throw ConfirmationExpiredTokenException(errorMessage = "Confirmation token has expired", errorCode = "CONF20")
-//                    return DataResult(error = IllegalStateException("Token expired"))
+                    throw ConfirmationExpiredTokenException()
                 }
 
                 confirmationTokenRepository.setConfirmedAt(token, LocalDateTime.now())
@@ -56,14 +54,12 @@ class ConfirmationTokenServiceImpl: ConfirmationTokenService {
 
                 DataResult(foundToken)
             } else {
-                throw ConfirmationTokenNotFoundException(errorMessage = "Confirmation token not found", errorCode = "CONF10")
-//                DataResult(error = IllegalStateException("Token not found"))
+                throw ConfirmationTokenNotFoundException()
             }
         } catch (t: ConfirmationExpiredTokenException) {
-            throw ConfirmationExpiredTokenException(errorMessage = "Confirmation token has expired", errorCode = "CONF20")
+            throw ConfirmationExpiredTokenException()
         } catch (t: Throwable) {
-            throw ConfirmationTokenNotFoundException(errorMessage = "Confirmation token not found", errorCode = "CONF10")
-//            return DataResult(error = IllegalStateException("Token not found"))
+            throw ConfirmationTokenNotFoundException()
         }
     }
 }

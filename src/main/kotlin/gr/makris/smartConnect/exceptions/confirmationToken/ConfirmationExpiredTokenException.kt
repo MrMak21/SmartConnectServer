@@ -4,6 +4,6 @@ import gr.atcom.gpslocationservice.model.common.Model
 import gr.makris.smartConnect.exceptions.base.SmartConnectException
 
 class ConfirmationExpiredTokenException(
-    override var errorCode: String,
-    override var errorMessage: String
+    override var errorCode: String = "CONF20",
+    override var errorMessage: String = "Confirmation token has expired"
 ): SmartConnectException(), Model

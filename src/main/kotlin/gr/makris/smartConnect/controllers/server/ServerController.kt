@@ -32,7 +32,7 @@ class ServerController {
         gson = Gson()
     }
 
-    @GetMapping("/api/smartConnect/server-check")
+    @GetMapping("/api/smartConnect/server-check", produces = ["application/json"])
     fun serverCheck(): String {
         //do some tests -- maybe check if connected to database
 

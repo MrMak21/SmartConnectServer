@@ -8,7 +8,10 @@ import gr.makris.smartConnect.security.PasswordEncoder
 import gr.makris.smartConnect.service.user.UserService
 import gr.makris.smartConnect.service.registration.ConfirmationTokenServiceImpl
 import gr.makris.smartConnect.data.registration.ConfirmationToken
+import gr.makris.smartConnect.data.user.User
+import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
 import gr.makris.smartConnect.mappers.confirmationToken.toJsonFormat
+import gr.makris.smartConnect.service.email.GmailServiceProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,16 +35,20 @@ class RegisterController {
     @Autowired
     private lateinit var passwordEncoder: PasswordEncoder
 
+    @Autowired
+    private lateinit var emailService: GmailServiceProvider
+
     private var gson: Gson = Gson()
 
-    @PostMapping("/api/smartConnect/createNewUser")
+    @PostMapping("/api/smartConnect/createNewUser", produces = ["application/json"])
     fun createNewUser(@RequestBody userRequest: RegistrationRequest): ResponseEntity<String> {
         val user = userRequest.toUserModel()
 
         val encodedPassword = passwordEncoder.bCryptPasswordEncoder().encode(user.password)
         user.password = encodedPassword
 
-        val response = userService.createUser(user = user)
+        val userSaveResponse = userService.createUser(user = user)
+
         val confirmationTokenRequest = ConfirmationToken(
             tokenid = UUID.randomUUID().toString(),
             token = UUID.randomUUID().toString(),
@@ -52,9 +59,10 @@ class RegisterController {
 
         val confirmationTokenResponse = confirmationTokenService.saveConfirmationToken(confirmationTokenRequest)
 
-        response.data.let {
+        userSaveResponse.data.let {
             confirmationTokenResponse.data?.let { token ->
                 logger.info(token.token)
+                sendEmail(it!!, token.token)
             }
             return ResponseEntity.ok(gson.toJson(it))
         }
@@ -67,8 +75,33 @@ class RegisterController {
         response.data.let {
             return ResponseEntity.ok(gson.toJson(it?.toJsonFormat()))
         }
-//            ?: response.error.let {
-//            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(gson.toJson(it?.message))
-//        }
+    }
+
+    @GetMapping("/api/smartConnect/newConfirmationToken", produces = ["application/json"])
+    fun produceNewConfirmationToken(@RequestParam(value = "userEmail") userEmail: String): ResponseEntity<String> {
+        val findUserResponse = userService.getUserByEmail(userEmail)
+
+        findUserResponse.data?.let { user ->
+            val confirmationTokenRequest = ConfirmationToken(
+                tokenid = UUID.randomUUID().toString(),
+                token = UUID.randomUUID().toString(),
+                createdat = LocalDateTime.now(),
+                expiresat = LocalDateTime.now().plusMinutes(15),
+                userid = user.userId
+            )
+
+            val confirmationTokenResponse = confirmationTokenService.saveConfirmationToken(confirmationTokenRequest)
+            confirmationTokenResponse.data?.let {
+                sendEmail(user, it.token)
+                return ResponseEntity(gson.toJson(it.toJsonFormat()), HttpStatus.OK)
+            }
+
+        } ?: findUserResponse.error.let {
+            throw UserNotFoundException()
+        }
+    }
+
+    private fun sendEmail(user: User, token: String) {
+        emailService.createEmail(user, token)
     }
 }
