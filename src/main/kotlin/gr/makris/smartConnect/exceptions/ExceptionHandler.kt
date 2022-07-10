@@ -2,6 +2,8 @@ package gr.makris.smartConnect.exceptions
 
 import gr.makris.smartConnect.data.error.ApiError
 import gr.makris.smartConnect.data.error.CustomError
+import gr.makris.smartConnect.exceptions.confirmationToken.ConfirmationExpiredTokenException
+import gr.makris.smartConnect.exceptions.confirmationToken.ConfirmationTokenNotFoundException
 import gr.makris.smartConnect.exceptions.userExceptions.InvalidCredentialsException
 import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
 import org.springframework.core.Ordered
@@ -36,6 +38,22 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
             HttpStatus.UNAUTHORIZED,
                 listOf(CustomError(ex.errorCode, ex.errorMessage))
             )
+    }
+
+    @ExceptionHandler(value = [ConfirmationTokenNotFoundException::class])
+    fun confirmationTokenNotFoundExceptionHandler(ex: ConfirmationTokenNotFoundException): ResponseEntity<Any?> {
+        return buildResponseEntity(
+            HttpStatus.NOT_ACCEPTABLE,
+            listOf(CustomError(ex.errorCode, ex.errorMessage))
+        )
+    }
+
+    @ExceptionHandler(value = [ConfirmationExpiredTokenException::class])
+    fun confirmationExpiredTokenExceptionHandler(ex: ConfirmationExpiredTokenException): ResponseEntity<Any?> {
+        return buildResponseEntity(
+            HttpStatus.NOT_ACCEPTABLE,
+            listOf(CustomError(ex.errorCode, ex.errorMessage))
+        )
     }
 
     private fun buildResponseEntity(apiError: ApiError): ResponseEntity<Any?> {

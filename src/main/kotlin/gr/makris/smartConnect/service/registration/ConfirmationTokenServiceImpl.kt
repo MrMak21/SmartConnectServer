@@ -4,15 +4,20 @@ import gr.atcom.gpslocationservice.model.common.DataResult
 import gr.makris.smartConnect.repository.DbRepository
 import gr.makris.smartConnect.repository.registration.ConfirmationTokenRepository
 import gr.makris.smartConnect.data.registration.ConfirmationToken
+import gr.makris.smartConnect.exceptions.confirmationToken.ConfirmationExpiredTokenException
+import gr.makris.smartConnect.exceptions.confirmationToken.ConfirmationTokenNotFoundException
 import lombok.AllArgsConstructor
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.lang.IllegalStateException
 import java.time.LocalDateTime
 
 @Service
 @AllArgsConstructor
 class ConfirmationTokenServiceImpl: ConfirmationTokenService {
+
+    val logger: Logger = LoggerFactory.getLogger(ConfirmationTokenServiceImpl::class.java)
 
     @Autowired
     lateinit var confirmationTokenRepository: ConfirmationTokenRepository
@@ -24,8 +29,9 @@ class ConfirmationTokenServiceImpl: ConfirmationTokenService {
         return try {
             DataResult(confirmationTokenRepository.save(token))
         } catch (t: Throwable) {
-            println( t.message)
-            DataResult(error = t)
+            logger.info(t.message)
+            throw throw ConfirmationTokenNotFoundException(errorMessage = "There was a problem in confirmation token saving", errorCode = "CONF15")
+//            DataResult(error = t)
         }
     }
 
@@ -35,49 +41,29 @@ class ConfirmationTokenServiceImpl: ConfirmationTokenService {
             return if (foundToken.token.isNotEmpty()) {
 
                 if (foundToken.createdat == null) {
-                    return DataResult(error = IllegalStateException("Token not found"))
+                    throw ConfirmationTokenNotFoundException(errorMessage = "Confirmation token not found", errorCode = "CONF10")
+//                    return DataResult(error = IllegalStateException("Token not found"))
                 }
 
                 val expiredDate = foundToken.expiresat
                 if (expiredDate.isBefore(LocalDateTime.now())) {
-                    return DataResult(error = IllegalStateException("Token expired"))
+                    throw ConfirmationExpiredTokenException(errorMessage = "Confirmation token has expired", errorCode = "CONF20")
+//                    return DataResult(error = IllegalStateException("Token expired"))
                 }
 
                 confirmationTokenRepository.setConfirmedAt(token, LocalDateTime.now())
                 userJpaRepository.enableUser(foundToken.userid)
 
-
                 DataResult(foundToken)
             } else {
-                DataResult(error = IllegalStateException("Token not found"))
+                throw ConfirmationTokenNotFoundException(errorMessage = "Confirmation token not found", errorCode = "CONF10")
+//                DataResult(error = IllegalStateException("Token not found"))
             }
+        } catch (t: ConfirmationExpiredTokenException) {
+            throw ConfirmationExpiredTokenException(errorMessage = "Confirmation token has expired", errorCode = "CONF20")
         } catch (t: Throwable) {
-            return DataResult(error = IllegalStateException("Token not found"))
+            throw ConfirmationTokenNotFoundException(errorMessage = "Confirmation token not found", errorCode = "CONF10")
+//            return DataResult(error = IllegalStateException("Token not found"))
         }
     }
-
-
-
-//    try {
-//        val foundToken = confirmationTokenRepository.findByToken(token)
-//        if (foundToken.token.isNotEmpty()) {
-//
-////                if (foundToken.createdat == null) {
-////                    return DataResult(error = IllegalStateException("token not found"))
-////                }
-////
-////                val expiredDate = foundToken.expiresat
-////                if (expiredDate.isBefore(LocalDateTime.now())) {
-////                    return DataResult(error = IllegalStateException("token expired"))
-////                }
-//
-//            return DataResult(foundToken)
-//
-//
-//        } else {
-//            return DataResult(error = Throwable("Token not found"))
-//        }
-//    } catch (t: Throwable) {
-//        return DataResult(error = t)
-//    }
 }
