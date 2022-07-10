@@ -11,4 +11,6 @@ interface UserService {
     fun getUsers(): List<User>
     fun createUser(user: User): DataResultWithError<User, Model>
     fun getUserByEmail(email: String): DataResultWithError<User, Model>
+    fun checkIfUserExists(email: String): Boolean
+    fun checkEmailFormat(email: String): Boolean
 }

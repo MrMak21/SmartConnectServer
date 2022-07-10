@@ -26,4 +26,7 @@ interface DbRepository: JpaRepository<User,String> {
 
     @Query("SELECT * FROM Users u where u.email = :email ", nativeQuery = true)
     fun findUserByEmail(email: String): User
+
+    @Query("SELECT exists(select u.email from users u where u.email = :email) as userExists", nativeQuery = true)
+    fun checkIfUserExistsWithEmail(email: String)  : Int
 }

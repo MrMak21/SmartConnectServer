@@ -9,9 +9,14 @@ import gr.makris.smartConnect.repository.DbRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 @Service
 class UserServiceImpl : UserService {
+
+    private val VALID_EMAIL_ADDRESS_REGEX =
+        Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE)
 
     @Autowired
     private lateinit var userJpaRepository: DbRepository
@@ -37,5 +42,19 @@ class UserServiceImpl : UserService {
         } catch (t: Throwable) {
             DataResultWithError(error = UserNotFoundException(errorMessage = "User not found", errorCode = "24"))
         }
+    }
+
+    override fun checkIfUserExists(email: String): Boolean {
+        return try {
+            val userExists = userJpaRepository.checkIfUserExistsWithEmail(email)
+            userExists >= 1
+        } catch (t: Throwable) {
+            return true
+        }
+    }
+
+    override fun checkEmailFormat(email: String): Boolean {
+        val matcher: Matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+        return matcher.find()
     }
 }

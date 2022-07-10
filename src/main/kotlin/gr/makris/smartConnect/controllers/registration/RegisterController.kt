@@ -9,6 +9,8 @@ import gr.makris.smartConnect.service.user.UserService
 import gr.makris.smartConnect.service.registration.ConfirmationTokenServiceImpl
 import gr.makris.smartConnect.data.registration.ConfirmationToken
 import gr.makris.smartConnect.data.user.User
+import gr.makris.smartConnect.exceptions.userExceptions.UserAlreadyExistsException
+import gr.makris.smartConnect.exceptions.userExceptions.UserEmailInvalidFormatException
 import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
 import gr.makris.smartConnect.mappers.confirmationToken.toJsonFormat
 import gr.makris.smartConnect.service.email.GmailServiceProvider
@@ -43,6 +45,18 @@ class RegisterController {
     @PostMapping("/api/smartConnect/createNewUser", produces = ["application/json"])
     fun createNewUser(@RequestBody userRequest: RegistrationRequest): ResponseEntity<String> {
         val user = userRequest.toUserModel()
+
+        val userExists = userService.checkIfUserExists(user.email)
+        if (userExists) {
+            throw UserAlreadyExistsException() // if user email exists throw an error message
+        }
+
+        val isEmailValid = userService.checkEmailFormat(user.email)
+        if (!isEmailValid) {
+            throw UserEmailInvalidFormatException()
+        }
+
+
 
         val encodedPassword = passwordEncoder.bCryptPasswordEncoder().encode(user.password)
         user.password = encodedPassword

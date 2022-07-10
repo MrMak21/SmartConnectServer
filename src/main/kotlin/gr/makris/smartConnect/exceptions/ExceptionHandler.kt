@@ -5,6 +5,8 @@ import gr.makris.smartConnect.data.error.CustomError
 import gr.makris.smartConnect.exceptions.confirmationToken.ConfirmationExpiredTokenException
 import gr.makris.smartConnect.exceptions.confirmationToken.ConfirmationTokenNotFoundException
 import gr.makris.smartConnect.exceptions.userExceptions.InvalidCredentialsException
+import gr.makris.smartConnect.exceptions.userExceptions.UserAlreadyExistsException
+import gr.makris.smartConnect.exceptions.userExceptions.UserEmailInvalidFormatException
 import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -50,6 +52,22 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [ConfirmationExpiredTokenException::class])
     fun confirmationExpiredTokenExceptionHandler(ex: ConfirmationExpiredTokenException): ResponseEntity<Any?> {
+        return buildResponseEntity(
+            HttpStatus.NOT_ACCEPTABLE,
+            listOf(CustomError(ex.errorCode, ex.errorMessage))
+        )
+    }
+
+    @ExceptionHandler(value = [UserAlreadyExistsException::class])
+    fun userAlreadyExistsHandler(ex: UserAlreadyExistsException): ResponseEntity<Any?> {
+        return buildResponseEntity(
+            HttpStatus.NOT_ACCEPTABLE,
+            listOf(CustomError(ex.errorCode, ex.errorMessage))
+        )
+    }
+
+    @ExceptionHandler(value = [UserEmailInvalidFormatException::class])
+    fun emailInvalidFormatHandler(ex: UserEmailInvalidFormatException): ResponseEntity<Any?> {
         return buildResponseEntity(
             HttpStatus.NOT_ACCEPTABLE,
             listOf(CustomError(ex.errorCode, ex.errorMessage))
