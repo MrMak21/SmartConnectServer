@@ -16,10 +16,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpSession
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.HttpTransport
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.gson.GsonFactory
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 class LoginController {
@@ -67,6 +72,26 @@ class LoginController {
         } ?: findUserResponse.error.let {
             throw InvalidCredentialsException()
         }
+    }
+
+    @GetMapping("api/smartConnect/googleLoginUser")
+    fun googleSignIn(@RequestParam(value = "idToken") idTokenString: String) {
+        val verifier = GoogleIdTokenVerifier.Builder(NetHttpTransport(), GsonFactory())
+            .setAudience(Collections.singletonList("168238449623-dv5soo6a9bck2ap1rhv4jkvcqn1f1i8s.apps.googleusercontent.com"))
+            .build()
+
+        try {
+            val idToken = verifier.verify(idTokenString)
+            if (idToken != null) {
+                val payload = idToken.payload
+
+                //get information
+
+            }
+        } catch (t: Throwable) {
+            t.message
+        }
+
     }
 
 }
