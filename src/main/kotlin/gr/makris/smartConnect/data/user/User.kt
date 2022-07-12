@@ -13,5 +13,6 @@ data class User(
     var lastname: String,
     var email: String,
     var password: String,
-    var enabled: Boolean = false
+    var enabled: Boolean = false,
+    var provider: String = ""
 )

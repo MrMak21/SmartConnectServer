@@ -4,6 +4,8 @@ import gr.makris.smartConnect.data.error.ApiError
 import gr.makris.smartConnect.data.error.CustomError
 import gr.makris.smartConnect.exceptions.confirmationToken.ConfirmationExpiredTokenException
 import gr.makris.smartConnect.exceptions.confirmationToken.ConfirmationTokenNotFoundException
+import gr.makris.smartConnect.exceptions.general.GeneralException
+import gr.makris.smartConnect.exceptions.login.GoogleLoginException
 import gr.makris.smartConnect.exceptions.userExceptions.InvalidCredentialsException
 import gr.makris.smartConnect.exceptions.userExceptions.UserAlreadyExistsException
 import gr.makris.smartConnect.exceptions.userExceptions.UserEmailInvalidFormatException
@@ -68,6 +70,22 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [UserEmailInvalidFormatException::class])
     fun emailInvalidFormatHandler(ex: UserEmailInvalidFormatException): ResponseEntity<Any?> {
+        return buildResponseEntity(
+            HttpStatus.NOT_ACCEPTABLE,
+            listOf(CustomError(ex.errorCode, ex.errorMessage))
+        )
+    }
+
+    @ExceptionHandler(value = [GoogleLoginException::class])
+    fun googleLoginExceptionHandler(ex: GoogleLoginException): ResponseEntity<Any?> {
+        return buildResponseEntity(
+            HttpStatus.NOT_ACCEPTABLE,
+            listOf(CustomError(ex.errorCode, ex.errorMessage))
+        )
+    }
+
+    @ExceptionHandler(value = [GeneralException::class])
+    fun generalExceptionHandler(ex: GeneralException): ResponseEntity<Any?> {
         return buildResponseEntity(
             HttpStatus.NOT_ACCEPTABLE,
             listOf(CustomError(ex.errorCode, ex.errorMessage))
