@@ -15,7 +15,9 @@ import gr.makris.smartConnect.exceptions.userExceptions.UserAlreadyExistsExcepti
 import gr.makris.smartConnect.exceptions.userExceptions.UserEmailInvalidFormatException
 import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
 import gr.makris.smartConnect.mappers.confirmationToken.toJsonFormat
+import gr.makris.smartConnect.response.confirmationToken.ConfirmationTokenResponse
 import gr.makris.smartConnect.response.password.ResetPasswordResponse
+import gr.makris.smartConnect.response.register.RegisterUserResponse
 import gr.makris.smartConnect.service.email.GmailServiceProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -76,12 +78,20 @@ class RegisterController {
 
         val confirmationTokenResponse = confirmationTokenService.saveConfirmationToken(confirmationTokenRequest)
 
-        userSaveResponse.data.let {
+        userSaveResponse.data?.let {
             confirmationTokenResponse.data?.let { token ->
                 logger.info(token.token)
-                sendEmail(it!!, token.token)
+                sendEmail(it, token.token)
+
+                return ResponseEntity.ok(gson.toJson(
+                    RegisterUserResponse(it, confirmationToken = token.token)
+                ))
+
+            } ?: confirmationTokenResponse.error.let {
+                throw GeneralException()
             }
-            return ResponseEntity.ok(gson.toJson(it))
+        } ?: userSaveResponse.error.let {
+            throw GeneralException()
         }
     }
 
@@ -89,8 +99,12 @@ class RegisterController {
     fun confirmToken(@RequestParam token: String): ResponseEntity<String> {
          val response = confirmationTokenService.confirmToken(token)
 
-        response.data.let {
-            return ResponseEntity.ok(gson.toJson(it?.toJsonFormat()))
+        response.data?.let {
+            return ResponseEntity.ok(gson.toJson(
+                ConfirmationTokenResponse(it.toJsonFormat())
+                ))
+        } ?: response.error.let {
+            throw GeneralException()
         }
     }
 
@@ -110,7 +124,7 @@ class RegisterController {
             val confirmationTokenResponse = confirmationTokenService.saveConfirmationToken(confirmationTokenRequest)
             confirmationTokenResponse.data?.let {
                 sendEmail(user, it.token)
-                return ResponseEntity(gson.toJson(it.toJsonFormat()), HttpStatus.OK)
+                return ResponseEntity(gson.toJson(ConfirmationTokenResponse(it.toJsonFormat())), HttpStatus.OK)
             }
 
         } ?: findUserResponse.error.let {
