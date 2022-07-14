@@ -8,7 +8,9 @@ import gr.makris.smartConnect.security.PasswordEncoder
 import gr.makris.smartConnect.service.user.UserService
 import gr.makris.smartConnect.service.registration.ConfirmationTokenServiceImpl
 import gr.makris.smartConnect.data.registration.ConfirmationToken
+import gr.makris.smartConnect.data.requests.passwordReset.PasswordResetRequest
 import gr.makris.smartConnect.data.user.User
+import gr.makris.smartConnect.exceptions.general.GeneralException
 import gr.makris.smartConnect.exceptions.userExceptions.UserAlreadyExistsException
 import gr.makris.smartConnect.exceptions.userExceptions.UserEmailInvalidFormatException
 import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
@@ -112,6 +114,23 @@ class RegisterController {
 
         } ?: findUserResponse.error.let {
             throw UserNotFoundException()
+        }
+    }
+
+    @PostMapping("api/smartConnect/passwordReset", produces = ["application/json"])
+    fun passwordReset(@RequestBody passwordResetRequest: PasswordResetRequest): ResponseEntity<String> {
+
+        val encodedPassword = passwordEncoder.bCryptPasswordEncoder().encode(passwordResetRequest.newPassword)
+        val passwordResetResponse = userService.passwordReset(email = passwordResetRequest.email, newPassword = encodedPassword )
+
+        passwordResetResponse.data?.let {
+            if (it > 0) {
+                return ResponseEntity(gson.toJson("Password updated successfully"), HttpStatus.OK)
+            } else {
+                throw GeneralException()
+            }
+        } ?: passwordResetResponse.error.let {
+            throw GeneralException()
         }
     }
 

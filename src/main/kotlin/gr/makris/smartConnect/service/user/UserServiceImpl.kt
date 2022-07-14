@@ -1,5 +1,6 @@
 package gr.makris.smartConnect.service.user
 
+import gr.atcom.gpslocationservice.model.common.DataResult
 import gr.atcom.gpslocationservice.model.common.DataResultWithError
 import gr.atcom.gpslocationservice.model.common.Model
 import gr.makris.smartConnect.data.user.CreateUserErrorModel
@@ -67,5 +68,13 @@ class UserServiceImpl : UserService {
     override fun checkEmailFormat(email: String): Boolean {
         val matcher: Matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
         return matcher.find()
+    }
+
+    override fun passwordReset(email: String, newPassword: String): DataResult<Int, Throwable> {
+        return try {
+            DataResult(userJpaRepository.resetUserPassword(newPassword, email))
+        } catch (t: Throwable) {
+            DataResult(error = t)
+        }
     }
 }

@@ -15,4 +15,5 @@ interface UserService {
     fun getUserByEmail(email: String): DataResultWithError<User, Model>
     fun checkIfUserExists(email: String): Boolean
     fun checkEmailFormat(email: String): Boolean
+    fun passwordReset(email: String, newPassword: String): DataResult<Int, Throwable>
 }

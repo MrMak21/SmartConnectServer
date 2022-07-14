@@ -20,6 +20,11 @@ interface DbRepository: JpaRepository<User,String> {
     @Query("Update users u SET u.enabled = 1 WHERE u.userid = :userid", nativeQuery = true)
     fun enableUser(@Param("userid") userId: String)
 
+    @Transactional
+    @Modifying
+    @Query("Update users u SET u.password = :password WHERE u.email = :email", nativeQuery = true)
+    fun resetUserPassword(@Param("password") password: String, @Param("email") email: String): Int
+
     override fun <S : User?> save(entity: S): S {
         return entity
     }

@@ -128,9 +128,19 @@ class LoginController {
     }
 
     private fun loginGoogleUser(user: User): ResponseEntity<String> {
+        val accessTokenPair = authenticationManager.createAccessToken(user)
+        val accessToken = accessTokenPair.first
+        val refreshToken = accessTokenPair.second
 
+        logger.info(
+            "Access token: $accessToken\n" +
+                    "Refresh token: $refreshToken"
+        )
 
-        return ResponseEntity(" ", HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.OK)
+            .header("accessToken", accessToken)
+            .header("refreshToken", refreshToken)
+            .body(gson.toJson(LoginResponse(user, accessToken, refreshToken)))
     }
 
 }
