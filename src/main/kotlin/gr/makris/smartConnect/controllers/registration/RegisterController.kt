@@ -15,6 +15,7 @@ import gr.makris.smartConnect.exceptions.userExceptions.UserAlreadyExistsExcepti
 import gr.makris.smartConnect.exceptions.userExceptions.UserEmailInvalidFormatException
 import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
 import gr.makris.smartConnect.mappers.confirmationToken.toJsonFormat
+import gr.makris.smartConnect.response.password.ResetPasswordResponse
 import gr.makris.smartConnect.service.email.GmailServiceProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -125,7 +126,9 @@ class RegisterController {
 
         passwordResetResponse.data?.let {
             if (it > 0) {
-                return ResponseEntity(gson.toJson("Password updated successfully"), HttpStatus.OK)
+                return ResponseEntity(gson.toJson(
+                    ResetPasswordResponse(passwordResetRequest.email, true, "Password updated successfully")
+                ), HttpStatus.OK)
             } else {
                 throw GeneralException()
             }
