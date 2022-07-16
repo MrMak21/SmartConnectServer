@@ -41,11 +41,10 @@ class ServerController {
         val serverStatus = ServerCheck(serverVersion = env.getProperty("server.version",""))
         return ResponseEntity.ok(gson.toJson(
             ServerCheckResponse(serverStatus.serverVersion, serverStatus.serverName, serverStatus.serverStatus)
-        ))
-    }
+        )    }
 
     @GetMapping("/api/smartConnect/getUsers", produces= ["application/json"])
-    fun getUsers(@RequestHeader(name = "x-auth-token", required = true) x_auth_token: String): ResponseEntity<String> {
+    fun getUsers(@RequestHeader(name = "Authorization", required = true) x_auth_token: String): ResponseEntity<String> {
         val isUserAuthenticated = authenticationManager.validateUser(x_auth_token)
         if (!isUserAuthenticated) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(gson.toJson(
