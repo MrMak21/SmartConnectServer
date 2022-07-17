@@ -6,6 +6,7 @@ import gr.makris.smartConnect.data.server.ServerCheck
 import gr.makris.smartConnect.exceptions.general.GeneralException
 import gr.makris.smartConnect.manager.authenticationManager.AuthenticationManager
 import gr.makris.smartConnect.response.server.ServerCheckResponse
+import gr.makris.smartConnect.response.users.GetUsersResponse
 import gr.makris.smartConnect.service.user.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
@@ -41,18 +42,22 @@ class ServerController {
         val serverStatus = ServerCheck(serverVersion = env.getProperty("server.version",""))
         return ResponseEntity.ok(gson.toJson(
             ServerCheckResponse(serverStatus.serverVersion, serverStatus.serverName, serverStatus.serverStatus)
-        )    }
+        ))
+    }
 
     @GetMapping("/api/smartConnect/getUsers", produces= ["application/json"])
     fun getUsers(@RequestHeader(name = "Authorization", required = true) x_auth_token: String): ResponseEntity<String> {
         val isUserAuthenticated = authenticationManager.validateUser(x_auth_token)
         if (!isUserAuthenticated) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(gson.toJson(
-                GeneralException(errorCode = "AUTH13", errorMessage = "Unauthorized")
-            ))
+            throw GeneralException()
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(gson.toJson(
+//                GeneralException(errorCode = "AUTH13", errorMessage = "Unauthorized")
+//            ))
         }
         val users = userService.getUsers()
-        return ResponseEntity(gson.toJson(users), HttpStatus.OK)
+        return ResponseEntity(gson.toJson(
+            GetUsersResponse(usersList = users)
+        ), HttpStatus.OK)
     }
 
 
