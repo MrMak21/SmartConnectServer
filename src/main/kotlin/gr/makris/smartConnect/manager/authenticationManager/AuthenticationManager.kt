@@ -42,7 +42,12 @@ class AuthenticationManager {
 
     fun validateUser(accessToken: String): Boolean {
         try {
-            val decryptToken = JWT().decodeJwt(accessToken)
+            if (!accessToken.startsWith("Bearer ")) {
+                return false
+            }
+
+            val splitToken = accessToken.split(" ")
+            val decryptToken = JWT().decodeJwt(splitToken[1])
             val issuer: String = env.getProperty("jwt.issuer", "")
 
             val tokenExpireTime = LocalDateTime.ofInstant(decryptToken.expiresAtAsInstant, ZoneOffset.UTC)
