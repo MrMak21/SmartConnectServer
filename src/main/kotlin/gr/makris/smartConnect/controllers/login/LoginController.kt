@@ -2,9 +2,7 @@ package gr.makris.smartConnect.controllers.login
 
 import com.google.gson.Gson
 import gr.makris.smartConnect.SmartConnectApplication
-import gr.makris.smartConnect.data.requests.login.LoginUserRequest
-import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
-import gr.makris.smartConnect.data.user.UserWrongPasswordErrorModel
+import gr.makris.smartConnect.data.requests.login.LoginUserRequestBody
 import gr.makris.smartConnect.exceptions.userExceptions.InvalidCredentialsException
 import gr.makris.smartConnect.exceptions.userExceptions.UserNotConfirmedException
 import gr.makris.smartConnect.manager.authenticationManager.AuthenticationManager
@@ -17,18 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import javax.servlet.http.HttpSession
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.HttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import gr.makris.smartConnect.data.user.GoogleUser
 import gr.makris.smartConnect.data.user.User
 import gr.makris.smartConnect.exceptions.general.GeneralException
 import gr.makris.smartConnect.exceptions.login.GoogleLoginException
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 @RestController
 class LoginController {
@@ -46,8 +41,11 @@ class LoginController {
 
     private var gson: Gson = Gson()
 
-    @PostMapping("api/smartConnect/loginUser", produces = ["application/json"])
-    fun loginUser(@RequestBody userLoginRequest: LoginUserRequest, httpSession: HttpSession): ResponseEntity<String> {
+    @PostMapping("api/smartConnect/loginUser",
+        consumes = ["application/json"],
+                produces = ["application/json"]
+        )
+    fun loginUser(@RequestBody userLoginRequest: LoginUserRequestBody, httpSession: HttpSession): ResponseEntity<String> {
 
         val findUserResponse = userService.getUserByEmail(userLoginRequest.email)
 
