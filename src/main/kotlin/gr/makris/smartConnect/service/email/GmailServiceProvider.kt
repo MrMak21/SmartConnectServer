@@ -19,7 +19,6 @@ class GmailServiceProvider {
     val applicationName: String = "SmartConnect"
     private var gson: Gson = Gson()
     private val emailFrom = "smartconnectgr@gmail.com"
-    private val emailTo = "panosmak37@gmail.com"
     private val serverAddress: String = "http://localhost:7777/api/smartConnect/confirm"
 
     @Autowired
