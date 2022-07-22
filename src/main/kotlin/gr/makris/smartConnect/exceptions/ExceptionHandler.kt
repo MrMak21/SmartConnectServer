@@ -6,10 +6,7 @@ import gr.makris.smartConnect.exceptions.confirmationToken.ConfirmationExpiredTo
 import gr.makris.smartConnect.exceptions.confirmationToken.ConfirmationTokenNotFoundException
 import gr.makris.smartConnect.exceptions.general.GeneralException
 import gr.makris.smartConnect.exceptions.login.GoogleLoginException
-import gr.makris.smartConnect.exceptions.userExceptions.InvalidCredentialsException
-import gr.makris.smartConnect.exceptions.userExceptions.UserAlreadyExistsException
-import gr.makris.smartConnect.exceptions.userExceptions.UserEmailInvalidFormatException
-import gr.makris.smartConnect.exceptions.userExceptions.UserNotFoundException
+import gr.makris.smartConnect.exceptions.userExceptions.*
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
@@ -39,7 +36,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(value = [InvalidCredentialsException::class])
     fun invalidUserCredentialsHandler(ex: InvalidCredentialsException): ResponseEntity<Any?> {
         return buildResponseEntity(
-            HttpStatus.UNAUTHORIZED,
+            HttpStatus.NOT_ACCEPTABLE,
                 listOf(CustomError(ex.errorCode, ex.errorMessage))
             )
     }
@@ -88,6 +85,14 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     fun generalExceptionHandler(ex: GeneralException): ResponseEntity<Any?> {
         return buildResponseEntity(
             HttpStatus.NOT_ACCEPTABLE,
+            listOf(CustomError(ex.errorCode, ex.errorMessage))
+        )
+    }
+
+    @ExceptionHandler(value = [UnauthorizedException::class])
+    fun unauthorizedExceptionHandler(ex: UnauthorizedException): ResponseEntity<Any?> {
+        return buildResponseEntity(
+            HttpStatus.UNAUTHORIZED,
             listOf(CustomError(ex.errorCode, ex.errorMessage))
         )
     }

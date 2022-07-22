@@ -1,9 +1,8 @@
 package gr.makris.smartConnect.controllers.server
 
-import com.auth0.jwt.JWT
 import com.google.gson.Gson
 import gr.makris.smartConnect.data.server.ServerCheck
-import gr.makris.smartConnect.exceptions.general.GeneralException
+import gr.makris.smartConnect.exceptions.userExceptions.UnauthorizedException
 import gr.makris.smartConnect.manager.authenticationManager.AuthenticationManager
 import gr.makris.smartConnect.response.server.ServerCheckResponse
 import gr.makris.smartConnect.response.users.GetUsersResponse
@@ -49,10 +48,7 @@ class ServerController {
     fun getUsers(@RequestHeader(name = "Authorization", required = true) x_auth_token: String): ResponseEntity<String> {
         val isUserAuthenticated = authenticationManager.validateUser(x_auth_token)
         if (!isUserAuthenticated) {
-            throw GeneralException()
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(gson.toJson(
-//                GeneralException(errorCode = "AUTH13", errorMessage = "Unauthorized")
-//            ))
+            throw UnauthorizedException()
         }
         val users = userService.getUsers()
         return ResponseEntity(gson.toJson(
